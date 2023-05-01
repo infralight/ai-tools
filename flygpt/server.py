@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # Load all PDF files in the "input" directory and create an index
     all_file_paths = get_all_file_paths("./input")
     py_pdf_loader = [PyPDFLoader(path) for path in all_file_paths]
-    index = VectorstoreIndexCreator().from_loaders(py_pdf_loader)
+    index = VectorstoreIndexCreator(vectorstore_kwargs={"persist_directory": "db"}).from_loaders(py_pdf_loader)
 
     # Start an HTTP server on localhost port 8200 with MyRequestHandler
     server_address = ('localhost', 8200)

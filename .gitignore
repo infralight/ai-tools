@@ -1,2 +1,4 @@
-
+.idea/**
 flygpt/input/**
+flygpt/.chroma/**
+flygpt/db/**
