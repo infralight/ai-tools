@@ -22,7 +22,7 @@ Replace `my_api_key` with your actual OpenAI API key.
 To use the pre-built Docker image from Docker Hub, you can use the following command:
 
 ```
-docker run -p 8200:8200 -e OPENAI_API_KEY=my_api_key openai/flygpt:latest
+docker run -p 8200:8200 -e OPENAI_API_KEY=my_api_key flygpt:latest
 ```
 
 Replace `my_api_key` with your actual OpenAI API key.
