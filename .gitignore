@@ -2,3 +2,4 @@
 flygpt/input/**
 flygpt/.chroma/**
 flygpt/db/**
+flygpt/infra/**/.terraform/*
