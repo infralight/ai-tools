@@ -62,7 +62,7 @@ if __name__ == "__main__":
     index = VectorstoreIndexCreator(vectorstore_kwargs={"persist_directory": "db"}).from_loaders(py_pdf_loader)
 
     # Start an HTTP server on localhost port 8200 with MyRequestHandler
-    server_address = ('localhost', 8200)
+    server_address = ('0.0.0.0', 8200)
     httpd = http.server.HTTPServer(server_address, lambda *args: MyRequestHandler(index, *args))
     httpd.serve_forever()
 
