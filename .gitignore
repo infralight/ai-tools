@@ -3,3 +3,5 @@ flygpt/input/**
 flygpt/.chroma/**
 flygpt/db/**
 flygpt/infra/**/.terraform/*
+flygpt/.DS_Store
+.DS_Store

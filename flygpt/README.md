@@ -11,7 +11,7 @@ To use FlyGPT, you can either build the Docker image from source or use the pre-
 To build the Docker image for FlyGPT, you can use the following command:
 
 ```
-docker build --build-arg OPENAI_API_KEY=my_api_key -t flygpt:latest .
+docker build --build-arg OPENAI_API_KEY=my_api_key -t flygpt:latest --memory=8g --cpu-shares=2048 .
 ```
 
 
@@ -22,7 +22,7 @@ Replace `my_api_key` with your actual OpenAI API key.
 To use the pre-built Docker image from Docker Hub, you can use the following command:
 
 ```
-docker run -p 8200:8200 -e OPENAI_API_KEY=my_api_key flygpt:latest
+docker run -p 8200:8200 flygpt:latest
 ```
 
 Replace `my_api_key` with your actual OpenAI API key.
