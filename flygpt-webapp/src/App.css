@@ -69,6 +69,10 @@ button {
   margin-top: 20px;
 }
 
+.response-text{
+  text-align: left;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

@@ -2,6 +2,20 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+
+## Docker
+### Build ###
+you should run:
+```
+docker build -t flygpt-webapp .
+```
+
+### Run ###
+you should run (port 1234):
+```
+docker run -p 1234:3000 -d flygpt-webapp
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
