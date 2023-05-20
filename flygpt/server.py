@@ -45,6 +45,11 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
             # Do something with post_data
             self.send_response(200)
             self.send_header("Content-type", "text/plain")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Headers", "*")
+            self.send_header("Allow", "POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Credentials", "true")
+
             self.end_headers()
 
             # Query the index with the decoded post data
@@ -54,6 +59,11 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
             # If the requested path is not "/ask", return a 404 error
             self.send_error(404)
 
+    def do_OPTIONS(self):
+        """Handle OPTIONS requests."""
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
 
 if __name__ == "__main__":
     # Load all PDF files in the "input" directory and create an index
