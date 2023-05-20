@@ -5,3 +5,6 @@ flygpt/db/**
 flygpt/infra/**/.terraform/*
 flygpt/.DS_Store
 .DS_Store
+flygpt/local.sh
+pdf_shrinker/input/**
+pdf_shrinker/output/**
