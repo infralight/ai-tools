@@ -80,7 +80,7 @@ function App() {
                 )}
                 {response && (
                     <div className="response-container">
-                        <p>{response}</p>
+                        <p className="response-text">{response}</p>
                     </div>
                 )}
             </main>
