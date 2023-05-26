@@ -1,6 +1,7 @@
 import os
 from langchain.document_loaders import PyPDFLoader
 from langchain.indexes import VectorstoreIndexCreator
+from langchain import OpenAI
 
 import http.server
 import socketserver
@@ -53,7 +54,7 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
 
             # Query the index with the decoded post data
-            res = self.index.query(post_data.decode())
+            res = self.index.query(post_data.decode(), llm=OpenAI(model_name="gpt-3.5-turbo", temperature=0.1))
             self.wfile.write(res.encode())
         else:
             # If the requested path is not "/ask", return a 404 error
