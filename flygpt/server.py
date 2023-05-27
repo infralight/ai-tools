@@ -1,11 +1,13 @@
 import os
 from langchain.document_loaders import PyPDFLoader
 from langchain.indexes import VectorstoreIndexCreator
-from langchain.chat_models import ChatOpenAI
+from langchain.chains import RetrievalQA
+from langchain.llms import OpenAI
 
 import http.server
 import socketserver
 import urllib.parse
+
 
 def get_all_file_paths(directory):
     """Get a list of file paths in a given directory and its subdirectories.
@@ -27,12 +29,14 @@ def get_all_file_paths(directory):
 
 class MyServer(socketserver.TCPServer):
     """Custom TCP server that initializes its parent class with given parameters."""
+
     def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
         super().__init__(server_address, RequestHandlerClass, bind_and_activate)
 
 
 class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
     """Custom request handler for HTTP server."""
+
     def __init__(self, index, *args):
         self.index = index
         super().__init__(*args)
@@ -54,7 +58,9 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
 
             # Query the index with the decoded post data
-            res = self.index.query(post_data.decode(), llm=ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.1))
+            chain = RetrievalQA.from_chain_type(llm=OpenAI(temperature=0), chain_type="stuff",
+                                                retriever=self.index.vectorstore.as_retriever(), input_key="question")
+            res = chain.apply([post_data.decode()])[0]["result"]
             self.wfile.write(res.encode())
         else:
             # If the requested path is not "/ask", return a 404 error
@@ -66,6 +72,7 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Content-type", "text/plain")
         self.end_headers()
 
+
 if __name__ == "__main__":
     # Load all PDF files in the "input" directory and create an index
     all_file_paths = get_all_file_paths("./input")
@@ -76,4 +83,3 @@ if __name__ == "__main__":
     server_address = ('0.0.0.0', 8200)
     httpd = http.server.HTTPServer(server_address, lambda *args: MyRequestHandler(index, *args))
     httpd.serve_forever()
-
