@@ -1,5 +1,5 @@
 requests==2.28.1
-langchain
+langchain==0.0.133
 openai
 pypdf
 tiktoken
