@@ -27,7 +27,7 @@ function App() {
         setError('');
 
         try {
-            const response = await customFetch('https://api.chat.gofirefly.io/ask', {
+            const response = await customFetch('http://localhost:8200/ask', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'text/plain',
