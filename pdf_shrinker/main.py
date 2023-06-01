@@ -4,7 +4,7 @@ from PDFNetPython3.PDFNetPython import PDFDoc, Optimizer, SDFDoc, PDFNet
 
 # Sefi: I'm happy to push this API Key to GitHub, because it took me ~1h to generate it
 # thru apryse.com, And if this API Key will be exposed I don't fucking care... Enjoy :)
-PDF_APIKEY = "demo:1683993898588:7dac8e9703000000000c8803bd22d7c1be68533792aed273521989fbca"
+PDF_APIKEY = "demo:NOW_ITS_A_PUBLIC_REPO_AND_WE_CANT_PUSH_SECRETS"
 
 def get_size_format(b, factor=1024, suffix="B"):
     """
