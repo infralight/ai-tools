@@ -1,0 +1,85 @@
+name: Deploy ai-tools Terraform Workspace
+"on":
+    push:
+        branches:
+            - main
+        paths:
+            - flygpt/infra/environment/prod/**
+    pull_request:
+        branches:
+            - main
+        paths:
+            - flygpt/infra/environment/prod/**
+    workflow_dispatch:
+        inputs:
+            apply:
+                description: Should apply Terraform changes?
+                type: boolean
+                default: false
+jobs:
+    deploy:
+        name: Deploy Terraform Workspace
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        defaults:
+            run:
+                working-directory: flygpt/infra/environment/prod
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            FIREFLY_ACCESS_KEY: ${{ secrets.FIREFLY_ACCESS_KEY }}
+            FIREFLY_SECRET_KEY: ${{ secrets.FIREFLY_SECRET_KEY }}
+            TF_VAR_aws_region: ${{ vars.aws_region }}
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+            - name: Set deployment parameters
+              id: set-params
+              run: |-
+                if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                  echo "apply=${{ github.event.inputs.apply }}" >> $GITHUB_OUTPUT
+                elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+                  echo "apply=true" >> $GITHUB_OUTPUT
+                else
+                  echo "apply=false" >> $GITHUB_OUTPUT
+                fi
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: 1.6.0
+                terraform_wrapper: false
+            - name: Terraform Init
+              run: |-
+                terraform init
+                terraform workspace new ai-tools || terraform workspace select ai-tools
+            - name: Terraform Plan
+              id: terraform-plan
+              run: terraform plan -json -out=tf.plan > plan_log.jsonl && terraform show -json tf.plan > plan_output.json && terraform show tf.plan > plan_output_raw.log
+              continue-on-error: true
+            - name: Firefly Post Plan
+              uses: gofireflyio/fireflyci@v0.3.3
+              with:
+                command: post-plan
+                context: flygpt/infra/environment/prod
+                plan-log-file: plan_log.jsonl
+                plan-out-raw-file: plan_output_raw.log
+                plan-output-file: plan_output.json
+                workspace: ai-tools
+              continue-on-error: true
+            - name: Terraform Apply
+              if: steps.set-params.outputs.apply == 'true' && steps.terraform-plan.outcome == 'success'
+              run: terraform apply -auto-approve -json > apply_log.jsonl
+              continue-on-error: true
+            - name: Firefly Post Apply
+              if: steps.set-params.outputs.apply == 'true' && steps.terraform-plan.outcome == 'success'
+              uses: gofireflyio/fireflyci@v0.3.3
+              with:
+                apply-log-file: apply_log.jsonl
+                command: post-apply
+                context: flygpt/infra/environment/prod
+                workspace: ai-tools
+              continue-on-error: true
